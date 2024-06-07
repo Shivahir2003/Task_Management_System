@@ -18,9 +18,12 @@ class UserSignUpForm(UserCreationForm):
 
     def clean(self):
         form_data= self.cleaned_data
+        username=form_data['username']
         password=form_data['password1']
 
-        if not re.match(PASSWORD_FORMAT,password):
+        if username is None:
+            self.add_error('username','user already exists')
+        elif not re.match(PASSWORD_FORMAT,password):
             self.add_error('password1','password is not valid')
         return form_data
 
