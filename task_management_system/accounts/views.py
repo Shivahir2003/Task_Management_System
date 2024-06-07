@@ -109,7 +109,7 @@ class UserSignupView(View):
             }
 
         if user_form.is_valid() and userprofile_form.is_valid():
-            username=userprofile_form.cleaned_data['username']
+            username=user_form.cleaned_data['username']
             mobile_number=userprofile_form.cleaned_data['mobile_number']
             user_image=userprofile_form.cleaned_data['user_image']
 
@@ -165,7 +165,7 @@ class ResetPasswordView(LoginRequiredMixin,View):
             user =User.objects.get(username=request.user.username)
             resetpassword_form=ResetPasswordForm(request.POST)
             if resetpassword_form.is_valid():
-                current_password=resetpassword_form.cleaned_data['old_password']
+                current_password=resetpassword_form.cleaned_data['current_password']
                 new_password=resetpassword_form.cleaned_data['new_password']
 
                 if not user.check_password(current_password):
