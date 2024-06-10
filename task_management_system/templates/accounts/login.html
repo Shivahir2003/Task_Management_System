@@ -1,33 +1,82 @@
-{% extends 'base.html' %}
+{% extends 'layouts/auth_base.html' %}
 
+{% block pagetitle %}
+    Login - Task Manager
+{% endblock pagetitle %}
 
-{% block title %}
-    Task Manager | login
-{% endblock title %}
-
-
-{% block content %}
-    <form method="post" >
-        {% csrf_token %}
-
-        {% for field in loginform %}
-        {{field.label_tag}}
-        <br>
-        {{field}}
-        {% if field.errors %}
-        {{field.errors}}
-        {% endif %}
-        <br> <br>
-        {% endfor %}
-
-        
-
-        <input type="submit" value="login">
-    </form>
-    <br>
-    {% if request.user.is_authenticated %}
-            <button><a href="{% url 'accounts:logout'%}">Logout</a></button>
-            <button><a href="{% url 'accounts:reset-password'%}">reset password</a></button>
-    {% endif %}
     
-{% endblock content %}
+{% block pagecontent %}
+    <div class="container">
+      
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        
+        <div class="container">    
+          {% if messages %}
+          <div class="d-flex justify-content-end pt-4 pe-4">
+            <div class="alert alert-danger alert-dismissible fade show " role="alert">
+              <i class="bi bi-exclamation-octagon me-1"></i>
+              {% for message in messages %}
+                {{ message}}
+              {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+        {% endif %}
+
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="" class="logo d-flex align-items-center w-auto">
+                  <span class="d-none d-lg-block">Task Manager</span>
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                    <p class="text-center small">Enter your username & password to login</p>
+                  </div>
+                  <form class="row g-3 needs-validation" novalidate method="post">
+                    {% csrf_token %}
+                    <div class="col-12">
+                      <label for="id_username" class="form-label">Username</label>
+                      <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrepend"><i class="ri-add-line ri-user-3-line"></i></span>
+                        <input type="text" name="username" class="form-control" id="id_username" required maxlength="10">
+                        <div class="invalid-feedback ">Please enter your username.</div>
+                      </div>
+                      <label id="id_username-error" class="invalid-feedback" for={{form.password.id_for_label}}>
+                        {{loginform.username.errors}}
+                      </label>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="id_password" class="form-label">Password</label>
+                      <input type="password" name="password" class="form-control" id="id_password" minlength="8" required>
+                      <div class="invalid-feedback">Please enter your password!</div>
+                      <label id="id_username-error" class="invalid-feedback" for={{form.password.id_for_label}}>
+                        {{loginform.password.errors}}
+                      </label>
+                      
+                    </div>
+
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Login</button>
+                    </div>
+
+                    <div class="col-12">
+                      <p class="small mb-0">Don't have account? <a href="{% url 'accounts:signup' %}">Create an account</a></p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+{% endblock pagecontent %}
