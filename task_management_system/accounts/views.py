@@ -59,7 +59,7 @@ class UserLoginView(View):
             else:
                 login(request, user)
                 messages.success(request,"you have loggin successfully")
-                return redirect('accounts:login')
+                return redirect('accounts:profile')
         return render(request,'accounts/login.html',{'loginform':login_form})
 
 
@@ -194,3 +194,6 @@ def userlogoutview(request):
     """
     logout(request)
     return redirect('accounts:login')
+
+def profileview(request):
+    return render(request,"accounts/profile.html")
