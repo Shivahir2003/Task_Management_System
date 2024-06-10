@@ -20,11 +20,14 @@ class UserSignUpForm(UserCreationForm):
         form_data= self.cleaned_data
         username=form_data['username']
         password=form_data['password1']
+        password2=form_data['password2']
 
         if username is None:
             self.add_error('username','user already exists')
         elif not re.match(PASSWORD_FORMAT,password):
             self.add_error('password1','password is not valid')
+        elif password != password2:
+            self.add_error('password2',"password does not match")
         return form_data
 
 class UserProfileForm(forms.Form):
@@ -40,7 +43,7 @@ class UserLoginForm(forms.Form):
         Login user form
     """
     username = forms.CharField(max_length=10,required=True)
-    password = forms.CharField(max_length=8,
+    password = forms.CharField(min_length=8,
                                required=True,
                                widget=forms.PasswordInput())
 
@@ -49,9 +52,9 @@ class ResetPasswordForm(forms.Form):
     """
         Change password form
     """
-    current_password = forms.CharField(max_length=8,widget=forms.PasswordInput())
-    new_password = forms.CharField(max_length=8,widget=forms.PasswordInput())
-    confirm_password = forms.CharField(max_length=8,widget=forms.PasswordInput())
+    current_password = forms.CharField(min_length=8,widget=forms.PasswordInput())
+    new_password = forms.CharField(min_length=8,widget=forms.PasswordInput())
+    confirm_password = forms.CharField(min_length=8,widget=forms.PasswordInput())
 
     def clean(self):
         form_data=self.cleaned_data
