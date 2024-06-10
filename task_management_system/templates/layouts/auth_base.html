@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include 'includes/head.html' %}
+  <title>
+    {% block pagetitle %}
+    {% endblock pagetitle %}
+  </title>
+  {% block extrastyle %}{% endblock extrastyle %}
+</head>
+
+<body>
+  <main>
+    {% block pagecontent %}
+    {% endblock pagecontent %}
+  </main>
+  
+  {% block scripts %}
+    {% include 'includes/scripts.html' %}
+  {% endblock scripts %}
+    
+
+  <!-- Custom jquery File -->
+  {% block extrascripts %}
+  {% endblock extrascripts %}
+    
+
+
+
+</body>
+
+</html>

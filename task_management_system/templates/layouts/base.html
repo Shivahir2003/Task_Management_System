@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include 'includes/head.html' %}
+  <title>
+    {% block pagetitle %}
+    {% endblock pagetitle %}
+  </title>
+  {% block extrastyle %}{% endblock extrastyle %}
+</head>
+
+<body>
+  
+    {% block header %}
+      {% include 'includes/header.html' %}
+    {% endblock header %}
+    {% block sidebar %}
+      {% include 'includes/sidebar.html' %}
+    {% endblock sidebar %}
+
+
+  <main id="main" class="main">
+    {% block pagecontent %}
+    {% endblock pagecontent %}
+  </main>
+  
+  {% block footer %}
+    {% include 'includes/footer.html' %}
+  {% endblock footer %}
+  
+  {% block scripts %}
+    {% include 'includes/scripts.html' %}
+  {% endblock scripts %}
+    
+
+  <!-- Custom jquery File -->
+  {% block extrascripts %}
+  {% endblock extrascripts %}
+    
+
+
+
+</body>
+
+</html>
