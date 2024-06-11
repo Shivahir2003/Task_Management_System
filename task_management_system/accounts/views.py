@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate,login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.shortcuts import render,redirect,HttpResponse
+from django.shortcuts import render,redirect
 from django.views.generic.base import View
 
 from accounts.forms import UserSignUpForm,UserProfileForm,UserLoginForm,ResetPasswordForm
@@ -39,7 +39,7 @@ class UserLoginView(View):
                 username,password
             
             Retunrns:
-                HttpResponseRedirect: task_manager.html is successful.
+                HttpResponseRedirect dashboard.html if successful.
                 render login.html page with validation error 
         """
         login_form=UserLoginForm(request.POST)
@@ -59,7 +59,7 @@ class UserLoginView(View):
             else:
                 login(request, user)
                 messages.success(request,"you have loggin successfully")
-                return redirect('accounts:profile')
+                return redirect('taskmanager:dashboard')
         return render(request,'accounts/login.html',{'loginform':login_form})
 
 
@@ -133,8 +133,6 @@ class ResetPasswordView(LoginRequiredMixin,View):
     """
         Reset Password View Class
     """
-    login_url='accounts:login'
-
     def get(self,request):
         """
             Reset password get method
@@ -179,9 +177,9 @@ class ResetPasswordView(LoginRequiredMixin,View):
                     return redirect('accounts:logout')
             return render(request,'accounts/reset_password.html',{'resetpassform':resetpassword_form})
         except User.DoesNotExist:
-            return HttpResponse("user not found")
+            return render(request,"error_404.html")
 
-@login_required(login_url='accounts:login')
+@login_required()
 def userlogoutview(request):
     """
         User logout view
@@ -195,5 +193,15 @@ def userlogoutview(request):
     logout(request)
     return redirect('accounts:login')
 
+@login_required()
 def profileview(request):
+    """
+        Display user detail 
+        
+        Arguments:
+            request (HttpRequest)
+        
+        Returns:
+            render profile.html after login 
+    """
     return render(request,"accounts/profile.html")
