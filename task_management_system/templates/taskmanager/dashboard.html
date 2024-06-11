@@ -1,0 +1,74 @@
+{% extends 'layouts/base.html' %}
+
+{% block pagetitle %}
+Dashboard | Task Manager
+{% endblock pagetitle %}
+
+
+{% block pagecontent %}
+<div class="d-flex justify-content-between align-items-center ">
+  <div class="pagetitle mb-4 ">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+
+      </ol>
+    </nav>
+  </div>
+  <a href="{% url 'taskmanager:add_task' %}" class="btn btn-primary rounded-pill">
+    <i class="ph-bold ph-list-plus"></i>Add New Task</a>
+</div><!-- End Page Title -->
+
+<section class="section">
+  <div class="row">
+    {% for task in task_list %}
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title" style="font-size: 24px; ">
+            {% if task.is_completed %}
+            <s>{{task.task}}</s>
+            <i class="ph-fill ph-check-fat"></i>
+            {% else %}
+            {{task.task}}
+            {% endif %}
+          </h1>
+
+          {% if task.task_description %}
+          <p>
+          <p><em>Task Description</em></p>
+          {{task.task_description}}
+          </p>
+          {% endif %}
+
+          <div class="card-footer d-flex justify-content-between ">
+            <div class="start-date col-6">
+
+              <div>Start Date :-&nbsp; {{task.start_date|date}} </div>
+              <div>Time :- {{task.start_date|time}} </div>
+            </div>
+            <div class="due-date col-6">
+
+              <div>Due Date :-&nbsp; {{task.due_date|date}} </div>
+              <div> Time:- {{task.due_date|time}} </div>
+            </div>
+          </div>
+
+          <div class="pt-3">
+            <a href="{% url 'taskmanager:complete_task' task.pk %}" class="btn btn-info px-3 mx-2">
+              {% if task.is_completed %} Reset Task {% else %} Complete {% endif %}
+            </a>
+            <a href="{% url 'taskmanager:edit_task' task.pk %}" class="btn btn-success px-3 mx-2">Edit</a>
+            <a href="{% url 'taskmanager:delete_task' task.pk  %}" class="btn btn-danger px-3 mx-2">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+
+
+  </div>
+</section>
+
+{% endblock pagecontent %}
