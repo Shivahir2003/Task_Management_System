@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
 from django.views.generic.base import View
 
-from accounts.forms import UserSignUpForm,UserProfileForm,UserLoginForm,ResetPasswordForm
+from accounts.forms import UserSignUpForm,UserProfileForm,UserLoginForm,ResetPasswordForm,EditUserForm
 from accounts.models import UserProfile
 
 
@@ -25,8 +25,11 @@ class UserLoginView(View):
             Retunrns:
                 render login.html page with empty login form
         """
-        login_form=UserLoginForm()
-        return render(request,'accounts/login.html',{'loginform':login_form})
+        if request.user.is_authenticated:
+            return redirect('taskmanager:dashboard')
+        else:
+            login_form=UserLoginForm()
+            return render(request,'accounts/login.html',{'loginform':login_form})
 
     def post(self,request):
         """
@@ -58,7 +61,7 @@ class UserLoginView(View):
                 return redirect('accounts:login')
             else:
                 login(request, user)
-                messages.success(request,"you have loggin successfully")
+                messages.success(request,f'welcome! {request.user} to Task Manager')
                 return redirect('taskmanager:dashboard')
         return render(request,'accounts/login.html',{'loginform':login_form})
 
@@ -77,13 +80,16 @@ class UserSignupView(View):
             Returns:
                 render signup.html page with empty signup form 
         """
-        user_form=UserSignUpForm()
-        userprofile_form=UserProfileForm()
-        context={
-            'userform':user_form,
-            'profileform':userprofile_form
-            }
-        return render(request,'accounts/signup.html',context)
+        if request.user.is_authenticated:
+            return redirect('taskmanager:dashboard')
+        else:
+            user_form=UserSignUpForm()
+            userprofile_form=UserProfileForm()
+            context={
+                'userform':user_form,
+                'profileform':userprofile_form
+                }
+            return render(request,'accounts/signup.html',context)
 
     def post(self, request):
         """
@@ -99,7 +105,7 @@ class UserSignupView(View):
                 Uesr image
             
             Returns:
-                render signup.html page with validatoin error
+                render signup.html page with validation error
         """
         user_form=UserSignUpForm(request.POST)
         userprofile_form=UserProfileForm(request.POST, request.FILES)
@@ -127,6 +133,75 @@ class UserSignupView(View):
             )
             return redirect('accounts:login')
         return render(request,'accounts/signup.html',context)
+
+
+class EditProfileView(LoginRequiredMixin,View):
+    """
+        Edit User profile View Class
+    """
+    def get(self,request):
+        """
+            User signup get method
+            
+            Arguments:
+                request (HttpRequest)
+            
+            Returns:
+                render update_profile.html page with validation error
+        """
+        try:
+            user=User.objects.get(pk=request.user.pk)
+            userprofile=UserProfile.objects.get(user=user)
+
+            edituser_form=EditUserForm(instance=user)
+            editprofile_form=UserProfileForm(instance=userprofile)
+            context={
+                'userform':edituser_form,
+                'profileform':editprofile_form
+            }
+            return render(request,'accounts/update_profile.html',context)
+        except User.DoesNotExist:
+            return redirect("accounts:profile")
+        except UserProfile.DoesNotExist:
+            return redirect("accounts:profile")
+            
+
+    def post(self,request):
+        """
+            User signup post method
+            
+            Arguments:
+                request (HttpRequest)
+            
+            Required Parameters:
+                username,password,email address, mobile number
+            
+            Optional Parameters:
+                Uesr image
+            
+            Returns:
+                render update_profile.html page with validatoin error
+        """
+        try:
+            user=User.objects.get(pk=request.user.pk)
+            userprofile=UserProfile.objects.get(user=user)
+            edituser_form=EditUserForm(request.POST,instance=user)
+            editprofile_form=UserProfileForm(request.POST, request.FILES,instance=userprofile)
+            context={
+                'userform':edituser_form,
+                'profileform':editprofile_form
+            }
+            
+            if edituser_form.is_valid() and editprofile_form.is_valid():
+                edituser_form.save()
+                editprofile_form.save()
+                messages.success(request,'Profile updated successfully')
+                return redirect("accounts:profile")
+            return render(request,'accounts/update_profile.html',context)
+        except User.DoesNotExist:
+            return render(request,'error_404.html')
+        except UserProfile.DoesNotExist:
+            return render(request,'error_404.html')
 
 
 class ResetPasswordView(LoginRequiredMixin,View):
@@ -165,7 +240,6 @@ class ResetPasswordView(LoginRequiredMixin,View):
             if resetpassword_form.is_valid():
                 current_password=resetpassword_form.cleaned_data['current_password']
                 new_password=resetpassword_form.cleaned_data['new_password']
-
                 if not user.check_password(current_password):
                     messages.error(request,"current password does not match")
                 elif current_password == new_password:

@@ -20,12 +20,22 @@
       {% include 'includes/sidebar.html' %}
     {% endblock sidebar %}
 
-
   <main id="main" class="main">
+    {% if messages %}
+    <div class="d-flex justify-content-end ">
+      <div class="alert alert-success alert-dismissible fade show alert-animate z-2" role="alert">
+        <i class="bi bi-exclamation-octagon me-1"></i>
+        {% for message in messages %}
+            {{ message}}
+        {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+    {% endif %}
+
     {% block pagecontent %}
     {% endblock pagecontent %}
   </main>
-  
   {% block footer %}
     {% include 'includes/footer.html' %}
   {% endblock footer %}
@@ -33,15 +43,9 @@
   {% block scripts %}
     {% include 'includes/scripts.html' %}
   {% endblock scripts %}
-    
-
-  <!-- Custom jquery File -->
-  {% block extrascripts %}
-  {% endblock extrascripts %}
-    
-
-
-
 </body>
+<!-- Custom jquery File -->
+{% block extrascripts %}
+{% endblock extrascripts %}
 
 </html>
