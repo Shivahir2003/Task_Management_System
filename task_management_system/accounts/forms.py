@@ -3,6 +3,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+from accounts.models import UserProfile
+
 PASSWORD_FORMAT= r"^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
 
 class UserSignUpForm(UserCreationForm):
@@ -30,12 +32,24 @@ class UserSignUpForm(UserCreationForm):
             self.add_error('password2',"password does not match")
         return form_data
 
-class UserProfileForm(forms.Form):
+
+class EditUserForm(forms.ModelForm):
+    """User update form"""
+    class Meta:
+        model = User
+        fields=('username','email','first_name','last_name')
+
+
+class UserProfileForm(forms.ModelForm):
     """
         Create user profile form
     """
     mobile_number = forms.CharField(max_length=10,required=True)
     user_image = forms.FileField(required=False)
+
+    class Meta:
+        model=UserProfile
+        exclude=['user']
 
 
 class UserLoginForm(forms.Form):

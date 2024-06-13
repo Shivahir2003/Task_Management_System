@@ -1,0 +1,113 @@
+{% extends 'layouts/base.html' %}
+
+
+{% block pagetitle %}
+    Edit Profile | Task Manager
+{% endblock pagetitle %}
+
+{% block extrastyle %}
+<style>
+    input[type="file"] {
+    display: None;
+    }
+  </style>
+{% endblock extrastyle %}
+
+
+{% block pagecontent %}
+<div class="pagetitle mb-4">
+    <h1>Edit Profile</h1>
+    <nav>
+      <ol class="breadcrumb">
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section profile d-flex justify-content-center">
+      <div class="col-xl-10">
+
+        <div class="card">
+          <div class="card-body pt-3">
+            <!-- Bordered Tabs -->
+            <ul class="nav nav-tabs nav-tabs-bordered">
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-edit">
+                  
+                  <a href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">
+                  <a href="{% url 'accounts:reset_password' %}">change password</a>
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content pt-2">
+
+              <div class="tab-pane fade show active profile-edit pt-3" id="profile-edit">
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                  <div class="row mb-3">
+                    <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                    <div class="col-md-8 col-lg-9">
+                      <img src="/media/{{profileform.user_image.value}}" alt="Profile">
+
+                      <div class="pt-2">
+                          <input type="file" name="user_image" id="id_user_image">
+                        <label for="id_user_image">
+                          <span class="btn btn-primary btn-sm"><i class="bi bi-upload"></i></span>
+                        </label>
+
+                        <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a> 
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="id_username" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="username" type="text" class="form-control" id="id_username" value="{{userform.username.value}}">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="id_first_name" class="col-md-4 col-lg-3 col-form-label">First Name</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="first_name" type="text" class="form-control" id="id_first_name" value="{{userform.first_name.value}}">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="id_last_name" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="last_name" type="text" class="form-control" id="id_last_name" value="{{userform.last_name.value}}">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="id_mobile_number" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="mobile_number" type="text" class="form-control" id="id_mobile_number" value="{{profileform.mobile_number.value}}">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="id_email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="email" type="email" class="form-control" id="id_email" value="{{userform.email.value}}">
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </form><!-- End Profile Edit Form -->
+              </div>
+              </div>
+            </div><!-- End Bordered Tabs -->
+          </div>
+        </div>
+      </div>
+  </section>
+{% endblock pagecontent %}
