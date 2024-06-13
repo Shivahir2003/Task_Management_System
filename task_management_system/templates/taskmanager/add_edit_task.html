@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html' %}
+
+{% block pagetitle %}
+  {% if '/task/edit/' in request.path %}
+    Edit Task | Task Manager
+    {% else %}
+    Add Task | Task Manager
+  {% endif %}
+{% endblock pagetitle %}
+
+{% block pagecontent %}
+<div class="pagetitle mb-4 ">
+
+  {% if '/task/edit/' in request.path %}
+  <h1>Edit Task</h1>
+  {% else %}
+  <h1>Add Task</h1>
+  {% endif %}
+  <nav>
+    <ol class="breadcrumb">
+    </ol>
+  </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+  <div class="col-md-10 justify-content-center">
+    <div class="card">
+      <div class="card-body">
+        {% if '/task/edit/' in request.path %}
+        <h5 class="card-title">Edit your Task</h5>
+        {% else %}
+        <h5 class="card-title">Add your Task</h5>
+        {% endif %}
+
+        <form class="row g-3 " method="post">
+          {% csrf_token %}
+          
+          <div class="col-md-12">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="id_task" placeholder="Add Task" name="task" maxlength="200"
+                required {% if taskform.task.value %}value="{{taskform.task.value}}"{% endif %}>
+              <label for="id_task">Your Task</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="Add Description" id="id_task_description"
+                name="task_description" style="height: 100px;">{% if taskform.task_description.value %}{{taskform.task_description.value}}{% endif %}</textarea>
+              <label for="id_task_description">Task Description</label>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="col-sm-10">
+              <label for="id_start_date" class="col-5 col-form-label">Starting Date</label>
+              <input type="datetime-local" class="form-control" id="id_start_date" name="start_date"
+                {% if taskform.start_date.value %}value="{{taskform.start_date.value|date:'Y-m-d h:i:s'}}"{% endif %}>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="col-sm-10">
+              <label for="id_due_date" class="col-5 col-form-label">Due Date</label>
+              <input type="datetime-local" class="form-control" id="id_due_date" name="due_date"
+              {% if taskform.due_date.value %}value="{{taskform.due_date.value|date:'Y-m-d h:i:s'}}"{% endif %}>
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{% url 'taskmanager:dashboard' %}" class="btn btn-secondary">back</a>
+          </div>
+        </form><!-- End floating Labels Form -->
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock pagecontent %}
