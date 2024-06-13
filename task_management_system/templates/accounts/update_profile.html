@@ -44,7 +44,7 @@
             </ul>
             <div class="tab-content pt-2">
 
-              <div class="tab-pane fade show active profile-edit pt-3" id="profile-edit">
+              <div class="tab-pane fade show active pt-3" id="profile-edit">
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -52,7 +52,7 @@
                   <div class="row mb-3">
                     <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                     <div class="col-md-8 col-lg-9">
-                      <img src="/media/{{profileform.user_image.value}}" alt="Profile">
+                      <img src="/media/{{profileform.user_image.value}}" width="150px" alt="Profile">
 
                       <div class="pt-2">
                           <input type="file" name="user_image" id="id_user_image">
