@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
-from django.contrib.auth.forms import UserChangeForm
 from django.views.generic.base import View
 
 from accounts.forms import UserSignUpForm,UserProfileForm,UserLoginForm,ResetPasswordForm,EditUserForm
@@ -241,7 +240,6 @@ class ResetPasswordView(LoginRequiredMixin,View):
             if resetpassword_form.is_valid():
                 current_password=resetpassword_form.cleaned_data['current_password']
                 new_password=resetpassword_form.cleaned_data['new_password']
-                import pdb; pdb.set_trace()
                 if not user.check_password(current_password):
                     messages.error(request,"current password does not match")
                 elif current_password == new_password:
