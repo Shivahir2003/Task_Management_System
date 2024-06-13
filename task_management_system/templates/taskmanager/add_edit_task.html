@@ -52,14 +52,14 @@
           <div class="col-6">
             <div class="col-sm-10">
               <label for="id_start_date" class="col-5 col-form-label">Starting Date</label>
-              <input type="datetime-local" class="form-control" id="id_start_date" name="start_date"
+              <input type="datetime-local" step="any" class="form-control" id="id_start_date" name="start_date"
                 {% if taskform.start_date.value %}value="{{taskform.start_date.value|date:'Y-m-d h:i:s'}}"{% endif %}>
             </div>
           </div>
           <div class="col-6">
             <div class="col-sm-10">
               <label for="id_due_date" class="col-5 col-form-label">Due Date</label>
-              <input type="datetime-local" class="form-control" id="id_due_date" name="due_date"
+              <input type="datetime-local" step="any" class="form-control" id="id_due_date" name="due_date"
               {% if taskform.due_date.value %}value="{{taskform.due_date.value|date:'Y-m-d h:i:s'}}"{% endif %}>
             </div>
           </div>
