@@ -35,24 +35,38 @@ Dashboard | Task Manager
           </h1>
 
           {% if task.task_description %}
+          <hr>
           <p>
           <p><em>Task Description</em></p>
           {{task.task_description}}
           </p>
           {% endif %}
-
-          <div class="card-footer d-flex justify-content-between ">
+          <hr/>
+            <div class="d-flex justify-content-between mb-2 mb-4">
             <div class="start-date col-6">
 
-              <div>Start Date :-&nbsp; {{task.start_date|date}} </div>
-              <div>Time :- {{task.start_date|time}} </div>
+              <div>Start Date :-&nbsp; {{task.start_date|date:'d-m-Y'}} </div>
+              <div>Time :- {{task.start_date|time:'h:i:s a'}} </div>
             </div>
             <div class="due-date col-6">
 
-              <div>Due Date :-&nbsp; {{task.due_date|date}} </div>
-              <div> Time:- {{task.due_date|time}} </div>
+              <div>Due Date :-&nbsp; {{task.due_date|date:'d-m-Y'}} </div>
+              <div> Time:- {{task.due_date|time:'h:i:s a'}} </div>
             </div>
           </div>
+
+          <div class="card-footer d-flex justify-content-between ">
+            
+            <div class="start-date col-6 " data-bs-toggle="tooltip" data-bs-placement="bottom" title="Created : {{task.created|date:'d-m-Y h:i:s a'}}">
+
+              <div>Created On :-&nbsp; {{task.created|date:'d-m-Y'}} </div>
+            </div>
+            <div class="due-date col-6" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Modified : {{task.modified|date:'d-m-Y h:i:s a'}}">
+
+              <div>Modified On :-&nbsp; {{task.modified|date:'d-m-Y'}} </div>
+            </div>
+          </div>
+            
 
           <div class="pt-3">
             <a href="{% url 'taskmanager:complete_task' task.pk %}" class="btn btn-info px-3 mx-2">
