@@ -17,6 +17,8 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# login url
+LOGIN_URL="accounts:login"
 
 SECRET_KEY = config("SECRET_KEY")
 
@@ -36,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
+    'taskmanager.apps.TaskmanagerConfig',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -111,7 +115,7 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
 USE_TZ = True
 
