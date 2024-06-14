@@ -1,7 +1,9 @@
 import datetime
+import csv
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.views.generic.base import View,TemplateView
 
@@ -89,6 +91,7 @@ class AddTaskView(LoginRequiredMixin,View):
                     start_date=start_date,
                     due_date=due_date   
                 )
+                
                 return redirect('taskmanager:dashboard')
             return render(request,"taskmanager/add_edit_task.html",{'taskform':addtaskform})
         except User.DoesNotExist:
@@ -110,9 +113,12 @@ class EditTaskView(LoginRequiredMixin,View):
             Returns:
                 render add_edit_task.html with empty form
         """
-        task= TaskManager.objects.get(pk=task_pk)
-        edittaskform=TaskForm(instance=task)
-        return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
+        try:
+            task= TaskManager.objects.get(pk=task_pk)
+            edittaskform=TaskForm(instance=task)
+            return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
+        except TaskManager.DoesNotExist:
+            return render(request,'error_404.html')
 
     def post(self,request,task_pk):
         """
@@ -164,8 +170,11 @@ def deletetaskview(request,task_pk):
         
         delete task of given primary key
     """
-    TaskManager.objects.get(pk=task_pk).delete()
-    return redirect('taskmanager:dashboard')
+    try:
+        TaskManager.objects.get(pk=task_pk).delete()
+        return redirect('taskmanager:dashboard')
+    except TaskManager.DoesNotExist:
+        return render(request,'error_404.html')
 
 @login_required()
 def completetask(request,task_pk):
@@ -179,10 +188,29 @@ def completetask(request,task_pk):
         check if is_completed field and set toggle
             set True if Task is not completed else False for reset task
     """
-    task=TaskManager.objects.get(pk=task_pk)
-    if task.is_completed:
-        task.is_completed=False
-    else:
-        task.is_completed=True
-    task.save()
-    return redirect('taskmanager:dashboard')
+    try:
+        task=TaskManager.objects.get(pk=task_pk)
+        if task.is_completed:
+            task.is_completed=False
+        else:
+            task.is_completed=True
+        task.save()
+        return redirect('taskmanager:dashboard')
+    except TaskManager.DoesNotExist:
+        return render(request,'error_404.html')
+
+
+def genarate_csv(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="alltasks.csv"'},
+    )
+    tasks=TaskManager.objects.all()
+    writer = csv.writer(response)
+    writer.writerow(['task', 'task_description', 'start_date', 'due_date', 'created'])
+    for task in tasks:
+        print(task)
+        writer.writerow([task.task, task.task_description, task.start_date.strftime("%Y-%m-%d, %H:%M:%S"), task.due_date.strftime("%Y-%m-%d, %H:%M:%S"), task.created.strftime("%Y-%m-%d, %H:%M:%S")])
+
+    return response
