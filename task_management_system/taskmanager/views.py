@@ -35,7 +35,12 @@ class DashboardView(LoginRequiredMixin,TemplateView):
         """
         context = super(DashboardView, self).get_context_data(**kwargs)
         user=User.objects.get(username=self.request.user.username)
-        context['task_list']=user.taskmanager_set.all()
+        if self.request.GET and self.request.GET['query']:
+            task_title = self.request.GET['query']
+            context['task_list']=user.taskmanager_set.filter(task__icontains=task_title)
+            context['query']=task_title
+        else:   
+            context['task_list']=user.taskmanager_set.all()
         return context
 
 
@@ -202,15 +207,18 @@ def completetask(request,task_pk):
 
 def genarate_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.
+    filename=f"all-task-list-{request.user.username}.csv"
     response = HttpResponse(
         content_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="alltasks.csv"'},
+        headers={"Content-Disposition": f'attachment; filename={filename}'},
     )
-    tasks=TaskManager.objects.all()
-    writer = csv.writer(response)
-    writer.writerow(['task', 'task_description', 'start_date', 'due_date', 'created'])
-    for task in tasks:
-        print(task)
-        writer.writerow([task.task, task.task_description, task.start_date.strftime("%Y-%m-%d, %H:%M:%S"), task.due_date.strftime("%Y-%m-%d, %H:%M:%S"), task.created.strftime("%Y-%m-%d, %H:%M:%S")])
-
-    return response
+    try:
+        tasks=TaskManager.objects.filter(user=request.user)
+        writer = csv.writer(response)
+        writer.writerow(['task', 'task_description', 'start_date', 'due_date', 'created'])
+        for task in tasks:
+            writer.writerow([task.task, task.task_description, task.start_date.strftime("%Y-%m-%d, %H:%M:%S"), task.due_date.strftime("%Y-%m-%d, %H:%M:%S"), task.created.strftime("%Y-%m-%d, %H:%M:%S")])
+        return response
+    except TaskManager.DoesNotExist:
+        return render(request,'error_404.html')
+    
