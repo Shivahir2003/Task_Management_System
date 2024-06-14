@@ -71,7 +71,7 @@
                     <div class="col-12">
                         <label for="id_email" class="form-label">Your Email</label>
                         <input type="email" name="email" class="form-control" id="id_email" required>
-                        <label id="id_email-error" class="invalid-feedback" for={{form.email.id_for_label}}>
+                        <label id="id_email-error" class="text-danger" for={{form.email.id_for_label}}>
                             {{userform.email.errors}}
                         </label>
                     </div>
@@ -93,7 +93,7 @@
                     
                     <div class="col-12">
                         <label for="id_mobile_number" class="form-label">Mobile Number</label>
-                        <input type="text" name="mobile_number" class="form-control" id="id_mobile_number" required>
+                        <input type="text" name="mobile_number" class="form-control" id="id_mobile_number" maxlength="10" required>
                         <label id="id_mobile_number" class="text-danger" for={{form.mobile_number.id_for_label}}>
                             {{profileform.mobile_number.errors}}
                         </label>

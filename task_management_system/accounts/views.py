@@ -242,7 +242,7 @@ class ResetPasswordView(LoginRequiredMixin,View):
                 new_password=resetpassword_form.cleaned_data['new_password']
 
                 if not user.check_password(current_password):
-                    messages.error(request,"current password does not match")
+                    resetpassword_form.add_error('current_password',"current password does not match")
                 elif current_password == new_password:
                     resetpassword_form.add_error('new_password',"new password is same as current password")
                 else:
