@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% load static %}
 
 {% block pagetitle %}
 Dashboard | Task Manager
@@ -79,8 +80,13 @@ Dashboard | Task Manager
       </div>
     </div>
 
+    {% empty %}
+    <div class=" d-flex justify-content-center align-items-center flex-column">
+        <!-- <h1><i class="ph ph-smiley-x-eyes display-1"></i></h1> -->
+        <img src="{% static 'img/smiley-x-eyes-fill.svg' %}" alt="" width="150px">
+        <h3>No results found for <span class="text-danger">"{{query}}"</span> .</h3>
+      </div>
     {% endfor %}
-
 
   </div>
 </section>

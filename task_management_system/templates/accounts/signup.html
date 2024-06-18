@@ -1,9 +1,9 @@
 {% extends 'layouts/auth_base.html' %}
+{% load static %}
 
-
-{% block title %}
+{% block pagetitle %}
     signup | Task Manager
-{% endblock title %}
+{% endblock pagetitle %}
 
 
 {% block pagecontent %}
@@ -25,9 +25,9 @@
             <div class="row justify-content-center">
             <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
                 <div class="d-flex justify-content-center py-4">
-                <a href="index.html" class="logo d-flex align-items-center w-auto">
-                    <img src="static/img/logo.png" alt="">
-                    <span class="d-none d-lg-block">Task Manager</span>
+                <a href="{% url 'accounts:login' %}" class="logo d-flex align-items-center w-auto">
+                    <img src="{% static 'img/menu.png' %}" alt="">
+                    <span class="d-block">Task Manager</span>
                 </a>
                 </div><!-- End Logo -->
                 <div class="card mb-3">
@@ -37,7 +37,7 @@
                     <p class="text-center small">Enter your personal details to create account</p>
                     </div>
 
-                    <form class="row g-3 needs-validation" novalidate method="post" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" novalidate id="signup" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
 
 
@@ -46,62 +46,56 @@
                         <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend"><i class="ri-add-line ri-user-3-line"></i></span>
                         <input type="text" name="username" class="form-control" id="yourUsername" required>
-                        <div class="invalid-feedback">Please choose a username.</div>
-                        </div>
-                        <label id="id_username-error" class="invalid-feedback" for={{form.username.id_for_label}}>
-                            {{loginform.username.errors}}
+                        <label id="id_username-error" class="invalid-feedback"  for={{form.username.id_for_label}}>
+                            {{userform.username.errors}}
                         </label>
+                        </div>
                     </div>
                     
                     <div class="col-12">
                         <label for="id_password1" class="form-label">Password</label>
                         <input type="password" name="password1" class="form-control" id="id_password1" required>
-                        <div class="invalid-feedback">Please enter your password!</div>
-                        <label id="id_password1-error" class="invalid-feedback" for={{form.password1.id_for_label}}>
-                            {{loginform.password1.errors}}
+                        <label id="id_password1-error" class="text-danger" for={{form.password1.id_for_label}}>
+                            {{userform.password1.errors}}
                         </label>
                     </div>
 
                     <div class="col-12">
                         <label for="id_password2" class="form-label">Confirm Password</label>
                         <input type="password" name="password2" class="form-control" id="id_password2" required>
-                        <div class="invalid-feedback">Please confirm your password!</div>
-                        <label id="id_password2-error" class="invalid-feedback" for={{form.password2.id_for_label}}>
-                            {{loginform.password2.errors}}
+                        <label id="id_password2-error" class="text-danger" for={{form.password2.id_for_label}}>
+                            {{userform.password2.errors}}
                         </label>
                     </div>
 
                     <div class="col-12">
                         <label for="id_email" class="form-label">Your Email</label>
                         <input type="email" name="email" class="form-control" id="id_email" required>
-                        <div class="invalid-feedback">Please enter a valid Email adddress!</div>
-                        <label id="id_email-error" class="invalid-feedback" for={{form.email.id_for_label}}>
-                            {{loginform.email.errors}}
+                        <label id="id_email-error" class="text-danger" for={{form.email.id_for_label}}>
+                            {{userform.email.errors}}
                         </label>
                     </div>
 
                     <div class="col-md-6">
                         <label for="id_first_name" class="form-label">First Name</label>
                         <input type="text" name="first_name" class="form-control" id="id_first_name" required>
-                        <div class="invalid-feedback">Please enter your First Name</div>
                         <label id="id_first_name-error" class="invalid-feedback" for={{form.first_name.id_for_label}}>
-                            {{loginform.first_name.errors}}
+                            {{userform.first_name.errors}}
                         </label>
                       </div>
                       <div class="col-md-6">
                         <label for="id_last_name" class="form-label">Last Name</label>
                         <input type="text" name="last_name" class="form-control" id="id_last_name" required>
-                        <div class="invalid-feedback">Please enter Last Name</div>
                         <label id="id_last_name" class="invalid-feedback" for={{form.last_name.id_for_label}}>
-                            {{loginform.last_name.errors}}
+                            {{userform.last_name.errors}}
                         </label>
                     </div>
                     
                     <div class="col-12">
                         <label for="id_mobile_number" class="form-label">Mobile Number</label>
-                        <input type="text" name="mobile_number" class="form-control" id="id_mobile_number" required>
-                        <label id="id_mobile_number" class="invalid-feedback" for={{form.mobile_number.id_for_label}}>
-                            {{loginform.mobile_number.errors}}
+                        <input type="text" name="mobile_number" class="form-control" id="id_mobile_number" maxlength="10" required>
+                        <label id="id_mobile_number" class="text-danger" for={{form.mobile_number.id_for_label}}>
+                            {{profileform.mobile_number.errors}}
                         </label>
                         </div>
 
@@ -115,7 +109,7 @@
                     </div>
                     
                     <div class="col-12">
-                        <p class="small mb-0">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+                        <p class="small mb-0">Already have an account? <a href="{% url 'accounts:login' %}"><b>Log in</b></a></p>
                     </div>
                     </form>
                 </div>
@@ -126,3 +120,7 @@
         </section>
     </div>
 {% endblock pagecontent %}
+
+{% block extrascripts %}
+<script src="{% static '/js/signup_validate.js' %}"></script>
+{% endblock extrascripts %}
