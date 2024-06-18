@@ -23,6 +23,8 @@ class TaskForm(forms.ModelForm):
             }
         )
     )
+
+
     class Meta:
         model=TaskManager
         exclude=['is_completed','user']

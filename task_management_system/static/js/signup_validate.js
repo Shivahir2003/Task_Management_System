@@ -47,12 +47,10 @@ $(document).ready(function(){
                 required: true,
                 minlength: 8,
                 passwordformat: true,
-
             },
             password2:{
                 required: true,
                 minlength: 8,
-                equalTo : '#password1'
             },
             email: {
                 required: true,
@@ -81,7 +79,6 @@ $(document).ready(function(){
             },
             password2:{
                 required: "Please Confirm Your Password",
-                equalTo : "Password Does Not Match"
             },
             email: {
                 required: "Please Enter Valid Email Address"
