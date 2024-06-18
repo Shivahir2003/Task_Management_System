@@ -24,9 +24,7 @@ class UserSignUpForm(UserCreationForm):
         password=form_data['password1']
         password2=form_data['password2']
 
-        if username is None:
-            self.add_error('username','user already exists')
-        elif not re.match(PASSWORD_FORMAT,password):
+        if not re.match(PASSWORD_FORMAT,password):
             self.add_error('password1','password is not valid')
         elif password != password2:
             self.add_error('password2',"password does not match")

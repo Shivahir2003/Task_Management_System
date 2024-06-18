@@ -45,8 +45,8 @@
                         <label for="id_username" class="form-label">Username</label>
                         <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend"><i class="ri-add-line ri-user-3-line"></i></span>
-                        <input type="text" name="username" class="form-control" id="yourUsername" required>
-                        <label id="id_username-error" class="invalid-feedback"  for={{form.username.id_for_label}}>
+                        <input type="text" name="username" class="form-control" id="id_username" required>
+                        <label id="id_username-error" class="text-danger col-12"  for={{form.username.id_for_label}}>
                             {{userform.username.errors}}
                         </label>
                         </div>
@@ -79,14 +79,14 @@
                     <div class="col-md-6">
                         <label for="id_first_name" class="form-label">First Name</label>
                         <input type="text" name="first_name" class="form-control" id="id_first_name" required>
-                        <label id="id_first_name-error" class="invalid-feedback" for={{form.first_name.id_for_label}}>
+                        <label id="id_first_name-error" class="text-danger" for={{form.first_name.id_for_label}}>
                             {{userform.first_name.errors}}
                         </label>
                       </div>
                       <div class="col-md-6">
                         <label for="id_last_name" class="form-label">Last Name</label>
                         <input type="text" name="last_name" class="form-control" id="id_last_name" required>
-                        <label id="id_last_name" class="invalid-feedback" for={{form.last_name.id_for_label}}>
+                        <label id="id_last_name" class="text-danger" for={{form.last_name.id_for_label}}>
                             {{userform.last_name.errors}}
                         </label>
                     </div>

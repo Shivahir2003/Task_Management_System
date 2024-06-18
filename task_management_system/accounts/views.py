@@ -53,7 +53,7 @@ class UserLoginView(View):
             # check if user is not exists redirect to signup view
             if not User.objects.filter(username=username).exists():
                 messages.error(request,'you have not signed up ')
-                return redirect('accounts:signup')
+                return redirect('accounts:login')
 
             user = authenticate(request,username=username,password=password)
             if user is None:

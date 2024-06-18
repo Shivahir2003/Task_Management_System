@@ -50,7 +50,7 @@ $(document).ready(function(){
             },
             password2:{
                 required: true,
-                minlength: 8,
+                equalTo: "#id_password1"
             },
             email: {
                 required: true,
@@ -75,10 +75,11 @@ $(document).ready(function(){
             password1: {
                 required: "Please Enter Password",
                 minlength: "Minimum Length Is 8 "
-
+                
             },
             password2:{
-                required: "Please Confirm Your Password",
+                required: "Please confirm Password",
+                equalTo: "Password Does not match"
             },
             email: {
                 required: "Please Enter Valid Email Address"
