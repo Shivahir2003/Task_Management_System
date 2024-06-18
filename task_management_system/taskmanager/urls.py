@@ -9,5 +9,5 @@ urlpatterns = [
     path('edit/<int:task_pk>/',EditTaskView.as_view(),name='edit_task'),
     path('delete/<int:task_pk>/',deletetaskview,name='delete_task'),
     path('complete/<int:task_pk>/',completetask,name='complete_task'),
-    path('generate-csv/tasks',genarate_csv,name='get_all_tasks')
+    path('generate-csv/tasks',genarate_csv,name='get_all_tasks'),
 ]
