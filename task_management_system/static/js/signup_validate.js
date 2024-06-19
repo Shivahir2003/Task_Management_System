@@ -17,7 +17,7 @@ $(document).ready(function(){
         function (value, element) {
         return (
             this.optional(element) ||
-            /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+            /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(
             value
             )
         );
@@ -35,7 +35,18 @@ $(document).ready(function(){
             )
         );
         },
-        "Mobile Number Has no Alphabets"
+        "Mobile Number is not valid"
+    );
+    // validation for first name, last name
+    $.validator.addMethod(
+        "nameformat",
+        function (value, element) {
+        return (
+            this.optional(element) ||
+            /^[a-z[A-Z]+$/.test(value)
+        );
+        },
+        "name is not valid"
     );
 
     $("#signup").validate({
@@ -57,9 +68,11 @@ $(document).ready(function(){
                 emailformat: true
             },
             first_name: {
+                nameformat: true,
                 required: true,
             },
             last_name: {
+                nameformat: true,
                 required: true,
             },
             mobile_number: {
@@ -85,9 +98,11 @@ $(document).ready(function(){
                 required: "Please Enter Valid Email Address"
             },
             first_name: {
+                nameformat: "first name is not valid",
                 required: "Please Enter First Name",
             },
             last_name: {
+                nameformat: "last name is not valid",
                 required: "Please Enter Your Last Name",
             },
             mobile_number: {
