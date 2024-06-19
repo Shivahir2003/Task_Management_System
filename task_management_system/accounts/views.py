@@ -6,8 +6,14 @@ from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
 from django.views.generic.base import View
 
-from accounts.forms import UserSignUpForm,UserProfileForm,UserLoginForm,ResetPasswordForm,EditUserForm
 from accounts.models import UserProfile
+from accounts.forms import (
+    UserSignUpForm,
+    UserProfileForm,
+    UserLoginForm,
+    ResetPasswordForm,
+    EditUserForm,
+)
 
 
 class UserLoginView(View):
@@ -116,8 +122,6 @@ class UserSignupView(View):
 
         if user_form.is_valid() and userprofile_form.is_valid():
             username=user_form.cleaned_data['username']
-            mobile_number=userprofile_form.cleaned_data['mobile_number']
-            user_image=userprofile_form.cleaned_data['user_image']
 
             # check if user is exists then redirect to login view
             if User.objects.filter(username=username).exists():
@@ -126,11 +130,9 @@ class UserSignupView(View):
 
             # creating user 
             user = user_form.save()
-            UserProfile.objects.create(
-                user=user,
-                mobile_number=mobile_number,
-                user_image=user_image
-            )
+            userprofile=userprofile_form.save(commit=False)
+            userprofile.user=user
+            userprofile.save()
             return redirect('accounts:login')
         return render(request,'accounts/signup.html',context)
 
@@ -255,7 +257,7 @@ class ResetPasswordView(LoginRequiredMixin,View):
             return render(request,"error_404.html")
 
 @login_required()
-def userlogoutview(request):
+def user_logout_view(request):
     """
         User logout view
         
@@ -269,7 +271,7 @@ def userlogoutview(request):
     return redirect('accounts:login')
 
 @login_required()
-def profileview(request):
+def profile_view(request):
     """
         Display user detail 
         
