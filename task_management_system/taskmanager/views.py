@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic.base import View,TemplateView
 
@@ -47,26 +48,24 @@ class DashboardView(LoginRequiredMixin,TemplateView):
         return context
 
 
-class AddTaskView(LoginRequiredMixin,View):
-    """
-        Add Task View
-    """
-    def get(self,request):
-        """
-            Add Task get method
-            
-            Arguments:
-                request (HttpRequest)
-            
-            Returns:
-                render add_edit_task.html with empty form
-        """
-        addtaskform=TaskForm()
-        return render(request,"taskmanager/add_edit_task.html",{'taskform':addtaskform})
+class TaskManagerView(LoginRequiredMixin,View):
+    """ All Task Manager operations"""
+    
+    def dispatch(self,request,*args,**kwargs):
+        if request.path == reverse('taskmanager:add_task'):
+            return self.add_task_view(request)
+        elif '/task/edit/' in request.path:
+            return self.edit_task_view(request,**kwargs)
+        elif '/task/delete/' in request.path:
+            return self.delete_task_view(request,**kwargs)
+        elif '/task/complete/' in request.path:
+            return self.complete_task(request,**kwargs)
+        else:
+            return redirect('taskmanager:dashboard')
 
-    def post(self,request):
+    def add_task_view(self,request):
         """
-            Add Task post method
+            Add Task of logged in user
             
             Arguments:
                 request (HttpRequest)
@@ -78,55 +77,35 @@ class AddTaskView(LoginRequiredMixin,View):
                 task_description,star_date
             
             Returns:
-                HttpResponseRedirect: dashboard.html if successful
-                re-render page with validatoin error
+                In Get : render add task page
+                In Post : Redirect to Dashboard if task add succesfully 
         """
         try:
             user=User.objects.get(pk=request.user.pk)
-            addtaskform=TaskForm(request.POST)
-            if addtaskform.is_valid():
-                start_date=addtaskform.cleaned_data['start_date']
-                due_date=addtaskform.cleaned_data['due_date']
-                #  Saving addtaskform
-                task=addtaskform.save(commit=False)
-                task.user=user
-                # adding start Date if start_date is not given
-                if start_date is None:
-                    start_date=datetime.datetime.now()
-                    task.start_date=start_date
-                if due_date < timezone.now():
-                    addtaskform.add_error('due_date','due date can not to be before today')
-                else:
-                    task.save()
-                    return redirect('taskmanager:dashboard')
+            if request.method =="GET":
+                addtaskform=TaskForm()
+            elif request.method =="POST":
+                addtaskform=TaskForm(request.POST)
+                if addtaskform.is_valid():
+                    start_date=addtaskform.cleaned_data['start_date']
+                    due_date=addtaskform.cleaned_data['due_date']
+                    #  Saving addtaskform
+                    task=addtaskform.save(commit=False)
+                    task.user=user
+                    # adding start Date if start_date is not given
+                    if start_date is None:
+                        start_date=datetime.datetime.now()
+                        task.start_date=start_date
+                    if due_date < timezone.now():
+                        addtaskform.add_error('due_date','due date can not to be before today')
+                    else:
+                        task.save()
+                        return redirect('taskmanager:dashboard')
             return render(request,"taskmanager/add_edit_task.html",{'taskform':addtaskform})
         except User.DoesNotExist:
             return render(request,"error_404.html")
 
-
-class EditTaskView(LoginRequiredMixin,View):
-    """
-        Edit Task View
-    """
-    def get(self,request,task_pk):
-        """
-            Edit Task get method
-            
-            Arguments:
-                request (HttpRequest)
-                task_pk
-            
-            Returns:
-                render add_edit_task.html with empty form
-        """
-        try:
-            task= TaskManager.objects.get(pk=task_pk)
-            edittaskform=TaskForm(instance=task)
-            return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
-        except TaskManager.DoesNotExist:
-            return render(request,'error_404.html')
-
-    def post(self,request,task_pk):
+    def edit_task_view(self,request,task_pk):
         """
             Edit Task post method
             
@@ -141,63 +120,67 @@ class EditTaskView(LoginRequiredMixin,View):
                 task_description,star_date
 
             Returns:
-                HttpResponseRedirect: dashboard.html with edited form if successful
-                re-render page with validatoin error
+                In Get: 
+                    render add_edit_task.html with empty form
+                In Post:
+                    HttpResponseRedirect: dashboard.html with edited form if successful
+                    re-render page with validatoin error
         """
         try:
-            task_obj= TaskManager.objects.get(pk=task_pk)
-            edittaskform=TaskForm(request.POST,instance=task_obj)
-            if edittaskform.is_valid():
-                edit_task=edittaskform.save(commit=False)
-                edit_task.save()
-                return redirect('taskmanager:dashboard')
-            return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
+            task= TaskManager.objects.get(pk=task_pk)
+            if request.method == "GET":
+                edittaskform=TaskForm(instance=task)
+                return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
+            elif request.method == "POST":
+                edittaskform=TaskForm(request.POST,instance=task)
+                if edittaskform.is_valid():
+                    edit_task=edittaskform.save(commit=False)
+                    edit_task.save()
+                    return redirect('taskmanager:dashboard')
+        except TaskManager.DoesNotExist:
+            return render(request,'error_404.html')
+
+    def delete_task_view(self,request,task_pk):
+        """
+            Delete task form database
+            
+            Arguments:
+                request (HttpRequest),
+                task_pk
+            
+            delete task of given primary key
+        """
+        try:
+            TaskManager.objects.get(pk=task_pk).delete()
+            return redirect('taskmanager:dashboard')
+        except TaskManager.DoesNotExist:
+            return render(request,'error_404.html')
+
+    def complete_task(self,request,task_pk):
+        """
+            toggle is_completed field
+            
+            Arguments:
+                request (HttpRequest),
+                task_pk
+            
+            check if is_completed field and set toggle
+                set True if Task is not completed else False for reset task
+        """
+        try:
+            task=TaskManager.objects.get(pk=task_pk)
+            if task.is_completed:
+                task.is_completed=False
+            else:
+                task.is_completed=True
+            task.save()
+            return redirect('taskmanager:dashboard')
         except TaskManager.DoesNotExist:
             return render(request,'error_404.html')
 
 
 @login_required()
-def delete_task_view(request,task_pk):
-    """
-        Delete task form database
-        
-        Arguments:
-            request (HttpRequest),
-            task_pk
-        
-        delete task of given primary key
-    """
-    try:
-        TaskManager.objects.get(pk=task_pk).delete()    
-        return redirect('taskmanager:dashboard')
-    except TaskManager.DoesNotExist:
-        return render(request,'error_404.html')
-
-@login_required()
-def complete_task(request,task_pk):
-    """
-        toggle is_completed field
-        
-        Arguments:
-            request (HttpRequest),
-            task_pk
-        
-        check if is_completed field and set toggle
-            set True if Task is not completed else False for reset task
-    """
-    try:
-        task=TaskManager.objects.get(pk=task_pk)
-        if task.is_completed:
-            task.is_completed=False
-        else:
-            task.is_completed=True
-        task.save()
-        return redirect('taskmanager:dashboard')
-    except TaskManager.DoesNotExist:
-        return render(request,'error_404.html')
-
-@login_required()
-def genarate_csv(request):
+def get_all_task_csv(request):
     """
         Genarate CSV of all Tasks of loggedin user
         
