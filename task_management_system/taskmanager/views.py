@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
+from django.utils import timezone
 from django.views.generic.base import View,TemplateView
 
 from taskmanager.models import TaskManager
@@ -30,11 +31,13 @@ class DashboardView(LoginRequiredMixin,TemplateView):
             request (HttpRequest)
             
             Returns:
-                context data of all tasks 
+                filtered contex data if get task name,
+                all context data if task name not provided
             
         """
         context = super(DashboardView, self).get_context_data(**kwargs)
         user=User.objects.get(username=self.request.user.username)
+        # getting task name from search 
         if self.request.GET and self.request.GET['query']:
             task_title = self.request.GET['query']
             context['task_list']=user.taskmanager_set.filter(task__icontains=task_title)
@@ -82,22 +85,20 @@ class AddTaskView(LoginRequiredMixin,View):
             user=User.objects.get(pk=request.user.pk)
             addtaskform=TaskForm(request.POST)
             if addtaskform.is_valid():
-                task_data=addtaskform.cleaned_data
-                task=task_data['task']
-                task_description=task_data['task_description']
-                start_date=task_data['start_date']
-                due_date=task_data['due_date']
+                start_date=addtaskform.cleaned_data['start_date']
+                due_date=addtaskform.cleaned_data['due_date']
+                #  Saving addtaskform
+                task=addtaskform.save(commit=False)
+                task.user=user
+                # adding start Date if start_date is not given
                 if start_date is None:
                     start_date=datetime.datetime.now()
-                TaskManager.objects.create(
-                    user=user,
-                    task=task,
-                    task_description=task_description,
-                    start_date=start_date,
-                    due_date=due_date   
-                )
-                
-                return redirect('taskmanager:dashboard')
+                    task.start_date=start_date
+                if due_date < timezone.now():
+                    addtaskform.add_error('due_date','due date can not to be before today')
+                else:
+                    task.save()
+                    return redirect('taskmanager:dashboard')
             return render(request,"taskmanager/add_edit_task.html",{'taskform':addtaskform})
         except User.DoesNotExist:
             return render(request,"error_404.html")
@@ -145,19 +146,10 @@ class EditTaskView(LoginRequiredMixin,View):
         """
         try:
             task_obj= TaskManager.objects.get(pk=task_pk)
-            edittaskform=TaskForm(request.POST)
+            edittaskform=TaskForm(request.POST,instance=task_obj)
             if edittaskform.is_valid():
-                task_data=edittaskform.cleaned_data
-                task=task_data['task']
-                task_description=task_data['task_description']
-                start_date=task_data['start_date']
-                due_date=task_data['due_date']
-
-                task_obj.task=task
-                task_obj.task_description=task_description
-                task_obj.start_date=start_date
-                task_obj.due_date=due_date
-                task_obj.save()
+                edit_task=edittaskform.save(commit=False)
+                edit_task.save()
                 return redirect('taskmanager:dashboard')
             return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
         except TaskManager.DoesNotExist:
@@ -165,7 +157,7 @@ class EditTaskView(LoginRequiredMixin,View):
 
 
 @login_required()
-def deletetaskview(request,task_pk):
+def delete_task_view(request,task_pk):
     """
         Delete task form database
         
@@ -176,13 +168,13 @@ def deletetaskview(request,task_pk):
         delete task of given primary key
     """
     try:
-        TaskManager.objects.get(pk=task_pk).delete()
+        TaskManager.objects.get(pk=task_pk).delete()    
         return redirect('taskmanager:dashboard')
     except TaskManager.DoesNotExist:
         return render(request,'error_404.html')
 
 @login_required()
-def completetask(request,task_pk):
+def complete_task(request,task_pk):
     """
         toggle is_completed field
         
@@ -204,10 +196,20 @@ def completetask(request,task_pk):
     except TaskManager.DoesNotExist:
         return render(request,'error_404.html')
 
-
+@login_required()
 def genarate_csv(request):
+    """
+        Genarate CSV of all Tasks of loggedin user
+        
+        Arguments:
+            request (HttpRequest),
+            
+        Returns:
+            Httpresponse: Csv file 
+        
+    """
     # Create the HttpResponse object with the appropriate CSV header.
-    filename=f"all-task-list-{request.user.username}.csv"
+    filename=f"all_task_list_{request.user.username}.csv"
     response = HttpResponse(
         content_type="text/csv",
         headers={"Content-Disposition": f'attachment; filename={filename}'},
@@ -217,8 +219,7 @@ def genarate_csv(request):
         writer = csv.writer(response)
         writer.writerow(['task', 'task_description', 'start_date', 'due_date', 'created'])
         for task in tasks:
-            writer.writerow([task.task, task.task_description, task.start_date.strftime("%Y-%m-%d, %H:%M:%S"), task.due_date.strftime("%Y-%m-%d, %H:%M:%S"), task.created.strftime("%Y-%m-%d, %H:%M:%S")])
+            writer.writerow([task.task, task.task_description, task.start_date.strftime("%d/%m/%Y, %l:%M:%S %p"), task.due_date.strftime("%d/%m/%Y, %l:%M:%S %p"), task.created.strftime("%d/%m/%Y, %l:%M:%S %p")])
         return response
     except TaskManager.DoesNotExist:
         return render(request,'error_404.html')
-    

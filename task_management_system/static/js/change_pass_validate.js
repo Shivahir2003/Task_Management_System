@@ -23,6 +23,7 @@ $(document).ready(function(){
             },
             confirm_password: {
                 required: true,
+                equalTo:'#id_new_password'
             },
         },
         messages: {
@@ -34,6 +35,7 @@ $(document).ready(function(){
             },
             confirm_password: {
                 required: "confirm_password is Required",
+                equalTo: "Password Does not match",
             },
 
         },
