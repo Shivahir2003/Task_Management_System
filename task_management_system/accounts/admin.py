@@ -40,5 +40,4 @@ class UserFiels(UserAdmin):
     list_display=['id','username','email','first_name']
     list_display_links=["username"]
 
-    inlines=[UserProfileInline]
-    inlines=[TaskManagerInline]
+    inlines=[UserProfileInline,TaskManagerInline]
