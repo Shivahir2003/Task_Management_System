@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django import forms
 
 from taskmanager.models import TaskManager
@@ -28,3 +29,15 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model=TaskManager
         exclude=['is_completed','user']
+    
+    def clean(self):
+        form_data = self.cleaned_data
+        start_date = form_data['start_date']
+        due_date =form_data['due_date']
+
+        if not start_date and due_date < timezone.now():
+            self.add_error('due_date','due date must be greater than start date')
+        elif start_date and due_date < start_date :
+            self.add_error('due_date','due date must be greater than start date')
+        
+        return form_data
