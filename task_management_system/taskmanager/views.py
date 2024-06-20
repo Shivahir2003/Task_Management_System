@@ -1,5 +1,6 @@
 import datetime
 import csv
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -100,6 +101,7 @@ class TaskManagerView(LoginRequiredMixin,View):
                         addtaskform.add_error('due_date','due date can not to be before today')
                     else:
                         task.save()
+                        messages.success(request,'Task has been added!')
                         return redirect('taskmanager:dashboard')
             return render(request,"taskmanager/add_edit_task.html",{'taskform':addtaskform})
         except User.DoesNotExist:
@@ -130,13 +132,14 @@ class TaskManagerView(LoginRequiredMixin,View):
             task= TaskManager.objects.get(pk=task_pk)
             if request.method == "GET":
                 edittaskform=TaskForm(instance=task)
-                return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
             elif request.method == "POST":
                 edittaskform=TaskForm(request.POST,instance=task)
                 if edittaskform.is_valid():
                     edit_task=edittaskform.save(commit=False)
                     edit_task.save()
+                    messages.success(request,'Task has been Edited!')
                     return redirect('taskmanager:dashboard')
+            return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
         except TaskManager.DoesNotExist:
             return render(request,'error_404.html')
 
@@ -152,6 +155,7 @@ class TaskManagerView(LoginRequiredMixin,View):
         """
         try:
             TaskManager.objects.get(pk=task_pk).delete()
+            messages.success(request,'Task has been deleted!')
             return redirect('taskmanager:dashboard')
         except TaskManager.DoesNotExist:
             return render(request,'error_404.html')
@@ -193,16 +197,17 @@ def get_all_task_csv(request):
     """
     # Create the HttpResponse object with the appropriate CSV header.
     filename=f"all_task_list_{request.user.username}.csv"
+    headers={"Content-Disposition": f'attachment; filename={filename}'}
     response = HttpResponse(
         content_type="text/csv",
-        headers={"Content-Disposition": f'attachment; filename={filename}'},
+        headers=headers,
     )
     try:
         tasks=TaskManager.objects.filter(user=request.user)
         writer = csv.writer(response)
         writer.writerow(['task', 'task_description', 'start_date', 'due_date', 'created'])
         for task in tasks:
-            writer.writerow([task.task, task.task_description, task.start_date.strftime("%d/%m/%Y, %l:%M:%S %p"), task.due_date.strftime("%d/%m/%Y, %l:%M:%S %p"), task.created.strftime("%d/%m/%Y, %l:%M:%S %p")])
+            writer.writerow([task.task, task.task_description, task.start_date.strftime("%d/%m/%Y"), task.due_date.strftime("%d/%m/%Y"), task.created.strftime("%d/%m/%Y")])
         return response
     except TaskManager.DoesNotExist:
         return render(request,'error_404.html')
