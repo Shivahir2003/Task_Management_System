@@ -9,7 +9,7 @@ $(document).ready(function(){
             /^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/.test(value)
         );
         },
-        "Password Is Not Valid"
+        "Password Is Not Valid "
     );
     // validation for email using regex
     $.validator.addMethod(
@@ -87,9 +87,11 @@ $(document).ready(function(){
             },
             password1: {
                 required: "Please Enter Password",
-                minlength: "Minimum Length Is 8 "
-                
-            },
+                passwordformat: (
+                        `password must be:
+                        <li>8 Character long</li>
+                        <li>contains one number and one special Character</li>`
+                    )},
             password2:{
                 required: "Please confirm Password",
                 equalTo: "Password Does not match"
@@ -115,4 +117,5 @@ $(document).ready(function(){
             error.appendTo(element.next());
           },
     })
+        
 })

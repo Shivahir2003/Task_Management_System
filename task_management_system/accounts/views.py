@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate,login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
 from django.urls import reverse
@@ -33,6 +33,8 @@ class UserAuthenticationView(View):
             return self.edit_user_view(request)
         elif request.path == reverse('accounts:reset_password'):
             return self.change_password_view(request)
+        else :
+            return redirect('accounts:login')
 
     def login_view(self,request):
         """
@@ -77,6 +79,7 @@ class UserAuthenticationView(View):
                     return redirect('taskmanager:dashboard')
         return render(request,'accounts/login.html',{'loginform':login_form})
 
+    @method_decorator(login_required)
     def logout_view(self,request):
         """
         User logout view
@@ -132,6 +135,7 @@ class UserAuthenticationView(View):
                 }
         return render(request,'accounts/signup.html',context)
 
+    @method_decorator(login_required)
     def user_profile_view(self,request):
         """
             Display user detail 
@@ -144,6 +148,7 @@ class UserAuthenticationView(View):
         """
         return render(request,"accounts/profile.html")
     
+    @method_decorator(login_required)
     def edit_user_view(self,request):
         """
             User signup post method
@@ -189,6 +194,7 @@ class UserAuthenticationView(View):
         except UserProfile.DoesNotExist:
             return render(request,'error_404.html')
 
+    @method_decorator(login_required)
     def change_password_view(self,request):
         """
             Reset password post method
