@@ -57,8 +57,9 @@
                     </div> 
                     
                     <div class="col-12">
-                     <label for="id_password" class="form-label">Password</label>
-                     <div class="input-group has-validation">
+                      <label for="id_password" class="form-label">Password</label>
+                      <div class="input-group has-validation">
+                       <span class="input-group-text" id="inputGroupPrepend"><i class="ph ph-lock"></i></span>
                        <input type="password" name="password" class="form-control" id="id_password" required >
                        <label id="id_password-error" class="col-12 m-0 text-danger" for={{form.password.id_for_label}}>
                          {{loginform.password.errors}}
