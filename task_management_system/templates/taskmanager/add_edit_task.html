@@ -34,7 +34,22 @@
 
         <form class="row g-3 " method="post">
           {% csrf_token %}
-          
+          {% if request.user.is_superuser %}
+          {% if user_list %}
+          <div class="row">
+            <label class="col-sm-2 col-form-label ">User:</label>
+            <div class="col-sm-4">
+              <select class="form-select" aria-label="Default select example" id="id_user" name="user">
+                <option selected>assing task to</option>
+                {% for user in user_list %}
+                <option value="{{user.pk}}">{{user}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          {% endif %}
+          {% endif %}
+            
           <div class="col-md-12">
             <div class="form-floating">
               <input type="text" class="form-control" id="id_task" placeholder="Add Task" name="task" maxlength="200"
