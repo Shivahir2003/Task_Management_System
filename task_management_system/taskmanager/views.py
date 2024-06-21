@@ -38,14 +38,19 @@ class DashboardView(LoginRequiredMixin,TemplateView):
             
         """
         context = super(DashboardView, self).get_context_data(**kwargs)
-        user=User.objects.get(username=self.request.user.username)
-        # getting task name from search 
-        if self.request.GET and self.request.GET['query']:
-            task_title = self.request.GET['query']
-            context['task_list']=user.taskmanager_set.filter(task__icontains=task_title)
-            context['query']=task_title
-        else:   
-            context['task_list']=user.taskmanager_set.all()
+        if self.request.user.is_superuser:
+            context['task_list']=TaskManager.objects.all()
+        else:
+            user=User.objects.get(username=self.request.user.username)
+            # getting task name from search 
+            if self.request.GET and self.request.GET['query']:
+                task_title = self.request.GET['query']
+                context['task_list']=user.taskmanager_set.filter(task__icontains=task_title)
+                context['query']=task_title
+            else:   
+                context['task_list']=user.taskmanager_set.all()
+                context['task_completed']=user.taskmanager_set.filter(is_completed=True)
+                context['task_expired']=user.taskmanager_set.filter(due_date__lte=timezone.now())
         return context
 
 
@@ -82,6 +87,7 @@ class TaskManagerView(LoginRequiredMixin,View):
                 In Post : Redirect to Dashboard if task add succesfully 
         """
         try:
+            user_list=User.objects.all()
             user=User.objects.get(pk=request.user.pk)
             if request.method =="GET":
                 addtaskform=TaskForm()
@@ -90,6 +96,10 @@ class TaskManagerView(LoginRequiredMixin,View):
                 if addtaskform.is_valid():
                     start_date=addtaskform.cleaned_data['start_date']
                     due_date=addtaskform.cleaned_data['due_date']
+                    if user.is_superuser:
+                        user_pk=request.POST.get('user')
+                        user=User.objects.get(pk=user_pk)
+                    
                     #  Saving addtaskform
                     task=addtaskform.save(commit=False)
                     task.user=user
@@ -103,7 +113,11 @@ class TaskManagerView(LoginRequiredMixin,View):
                         task.save()
                         messages.success(request,'Task has been added!')
                         return redirect('taskmanager:dashboard')
-            return render(request,"taskmanager/add_edit_task.html",{'taskform':addtaskform})
+            context={
+                'taskform':addtaskform,
+                'user_list':user_list
+                }
+            return render(request,"taskmanager/add_edit_task.html",context)
         except User.DoesNotExist:
             return render(request,"error_404.html")
 
@@ -135,11 +149,14 @@ class TaskManagerView(LoginRequiredMixin,View):
             elif request.method == "POST":
                 edittaskform=TaskForm(request.POST,instance=task)
                 if edittaskform.is_valid():
-                    edit_task=edittaskform.save(commit=False)
+                    edit_task=edittaskform.save(commit=False)                    
                     edit_task.save()
                     messages.success(request,'Task has been Edited!')
                     return redirect('taskmanager:dashboard')
-            return render(request,"taskmanager/add_edit_task.html",{'taskform':edittaskform})
+            context={
+                'taskform':edittaskform,
+                }
+            return render(request,"taskmanager/add_edit_task.html",context)
         except TaskManager.DoesNotExist:
             return render(request,'error_404.html')
 
