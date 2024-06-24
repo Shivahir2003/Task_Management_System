@@ -32,14 +32,15 @@ Dashboard | Task Manager
             <i class="ph-fill ph-check-fat"></i>
             {% else %}
             {{task.task}}
+            {% if request.user.is_superuser %}- <em class="text-danger">{{task.user}}</em> {% endif %} 
             {% endif %}
           </h1>
 
           {% if task.task_description %}
           <hr>
           <p>
-          <p><em>Task Description</em></p>
-          {{task.task_description}}
+          <p><em>Task Description :</em></p>
+          {{task.task_description |safe}}
           </p>
           {% endif %}
           <hr/>
