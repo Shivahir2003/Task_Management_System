@@ -2,7 +2,6 @@
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item ">  
         <a class="nav-link {% if not request.path == '/task/dashboard/' %} collapsed {% endif %} " href="{% url 'taskmanager:dashboard' %}">
-
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
@@ -29,7 +28,7 @@
             </a>
           </li>
         </ul>
-      </li><!-- End Forms Nav -->
+      </li><!-- End accounts Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#task-nav" data-bs-toggle="collapse" href="#">
@@ -41,13 +40,34 @@
               <i class="bi bi-circle"></i><span>Add Task</span>
             </a>
           </li>
+        </ul>
+      </li><!-- End Task nav -->
+      
+      {% if request.user.is_superuser %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#csv-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-table"></i><span>Generate Report</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="csv-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          {% for user in users %}
           <li>
-            <a href="{% url 'taskmanager:get_all_tasks' %}">
-              <i class="bi bi-circle"></i><span>generate task report</span>
+            <a href="{% url 'taskmanager:get_all_tasks' user.pk %}">
+              <i class="bi bi-circle"></i><span>{{user}}</span>
             </a>
           </li>
+          {% endfor %}
+            
         </ul>
-      </li><!-- End Forms Nav -->
+      </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="{% url 'taskmanager:get_all_tasks' %}">
+            <i class="bi bi-table"></i><span>generate task report</span>
+          </a>
+        </li>
+      {% endif %} <!-- End generate task repoet nav -->
+        
+      
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'accounts:logout' %}">
           <i class="bi bi-box-arrow-in-right"></i>
