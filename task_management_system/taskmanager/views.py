@@ -40,6 +40,7 @@ class DashboardView(LoginRequiredMixin,TemplateView):
         context = super(DashboardView, self).get_context_data(**kwargs)
         if self.request.user.is_superuser:
             context['task_list']=TaskManager.objects.all()
+            context['users']=User.objects.all()
         else:
             user=User.objects.get(username=self.request.user.username)
             # getting task name from search 
@@ -201,7 +202,7 @@ class TaskManagerView(LoginRequiredMixin,View):
 
 
 @login_required()
-def get_all_task_csv(request):
+def get_all_task_csv(request,**kwargs):
     """
         Genarate CSV of all Tasks of loggedin user
         
@@ -220,11 +221,18 @@ def get_all_task_csv(request):
         headers=headers,
     )
     try:
-        tasks=TaskManager.objects.filter(user=request.user)
+        if request.user.is_superuser:
+            tasks=TaskManager.objects.filter(user=kwargs['user_pk'])
+        else:
+            tasks=TaskManager.objects.filter(user=request.user)
         writer = csv.writer(response)
-        writer.writerow(['task', 'task_description', 'start_date', 'due_date', 'created'])
+        writer.writerow(['Task', 'Task_description','Status' ,'Start_date', 'Due_date', 'Created'])
         for task in tasks:
-            writer.writerow([task.task, task.task_description, task.start_date.strftime("%d/%m/%Y"), task.due_date.strftime("%d/%m/%Y"), task.created.strftime("%d/%m/%Y")])
+            if task.is_completed == True:
+                status = 'Completed'
+            else:
+                status = 'Incomplete'
+            writer.writerow([task.task, task.task_description,status, task.start_date.strftime("%d/%m/%Y"), task.due_date.strftime("%d/%m/%Y"), task.created.strftime("%d/%m/%Y")])
         return response
     except TaskManager.DoesNotExist:
         return render(request,'error_404.html')

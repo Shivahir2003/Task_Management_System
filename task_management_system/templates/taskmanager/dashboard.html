@@ -1,5 +1,7 @@
 {% extends 'layouts/base.html' %}
-{% load static %}
+  {% load mathfilters %}
+  {% load percentage_tag %}
+  {% load static %}
 
 {% block pagetitle %}
 Dashboard | Task Manager
@@ -20,8 +22,98 @@ Dashboard | Task Manager
     <i class="ph-bold ph-list-plus"></i>Add New Task</a>
 </div><!-- End Page Title -->
 
-<section class="section">
+<section class="section dashboard">
   <div class="row">
+    
+    {% if not request.user.is_superuser %}      
+
+    <div class="col-lg-12">
+      <div class="row">
+
+        <div class="col-xxl-3 col-md-6">
+          <div class="card info-card revenue-card">
+  
+            <div class="card-body">
+              <h5 class="card-title">Total Tasks</h5>
+  
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-list-check"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{task_list.count}}</h6>
+                  <span class="text-muted small pt-2 ps-1">Tasks you have assigned</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card revenue-card">
+
+          <div class="card-body">
+            <h5 class="card-title">Task Completed</h5>
+
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                
+                <i class="bx bx-task"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{task_completed.count}}</h6>
+                <span class="text-success small pt-1 fw-bold">{{task_completed.count|as_percentage_of:task_list.count}}</span> <span class="text-muted small pt-2 ps-1">Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card sales-card">
+
+          <div class="card-body">
+            <h5 class="card-title">Task Pending</h5>
+
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bx bx-timer"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{task_list.count|sub:task_completed.count}}</h6>
+                <span class="text-primary small pt-1 fw-bold">{{task_list.count|sub:task_completed.count|as_percentage_of:task_list.count}}</span> <span class="text-muted small pt-2 ps-1">Pending</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card customers-card">
+
+          <div class="card-body">
+            <h5 class="card-title">Task Expired</h5>
+
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi bi-calendar-minus"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{task_expired.count}} </h6>
+                <span class="text-danger small pt-1 fw-bold">{{task_expired.count|as_percentage_of:task_list.count}}</span> <span class="text-muted small pt-2 ps-1">Expired</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    {% endif %}
+
+
+
+
+
     {% for task in task_list %}
     <div class="col-lg-6">
       <div class="card">

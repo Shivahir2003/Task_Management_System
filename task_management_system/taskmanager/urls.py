@@ -14,5 +14,6 @@ urlpatterns = [
     path('edit/<int:task_pk>/',TaskManagerView.as_view(),name='edit_task'),
     path('delete/<int:task_pk>/',TaskManagerView.as_view(),name='delete_task'),
     path('complete/<int:task_pk>/',TaskManagerView.as_view(),name='complete_task'),
-    path('get-all-task/tasks',get_all_task_csv,name='get_all_tasks'),
+    path('get-all-task/',get_all_task_csv,name='get_all_tasks'),
+    path('get-all-task/<int:user_pk>',get_all_task_csv,name='get_all_tasks'),
 ]

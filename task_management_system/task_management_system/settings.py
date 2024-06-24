@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'taskmanager.apps.TaskmanagerConfig',
     'django_extensions',
     'ckeditor',
+    'mathfilters',
+    
 ]
 
 MIDDLEWARE = [
