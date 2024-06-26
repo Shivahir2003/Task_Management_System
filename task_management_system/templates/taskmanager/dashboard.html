@@ -20,7 +20,7 @@ Dashboard | Task Manager
   </div>
   <a href="{% url 'taskmanager:add_task' %}" class="btn btn-primary rounded-pill">
     <i class="ph-bold ph-list-plus"></i>Add New Task</a>
-</div><!-- End Page Title -->
+  </div>
 
 <section class="section dashboard">
   <div class="row">
@@ -108,80 +108,233 @@ Dashboard | Task Manager
     </div>
     </div>
 
+    
+    <div class="card col-7 mx-4">
+      
+      <div class="card-body pb-0 ">
+        <h5 class="card-title">Quick Access</h5>
+        <!-- Generate task list -->
+         <div class="row">
+
+        <div class="col-xxl-4 ">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Get all Task</h5>
+              <div class="d-flex align-items-center justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="{% url 'taskmanager:get_all_tasks' %}">
+                    <i class="ph ph-file-arrow-down"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xxl-4 ">
+          <div class="card info-card revenue-card">
+            <div class="card-body">
+              <h5 class="card-title">Add Task</h5>
+              <div class="d-flex align-items-center justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="{% url 'taskmanager:add_task' %}" class="text-success">
+                    <i class="ph ph-stack-plus"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xxl-4 ">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Show Profile</h5>
+              <div class="d-flex align-items-center justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="{% url 'accounts:profile' %}">
+                    <i class="ph ph-user-circle"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xxl-4 ">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title ">Edit Profile</h5>
+              <div class="d-flex align-items-center justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="{% url 'accounts:edit_profile' %}">
+                    <i class="ph ph-user-circle-gear "></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xxl-4 ">
+          <div class="card info-card customers-card">
+            <div class="card-body">
+              <h5 class="card-title">Change password</h5>
+              <div class="d-flex justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="{% url 'accounts:reset_password' %}" class="text-danger">
+                    <i class="ph ph-password"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xxl-4 ">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Logout</h5>
+              <div class="d-flex align-items-center justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="{% url 'accounts:logout' %}">
+                    <i class="ph ph-sign-out"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+    
+    <div class="card col-4">
+      
+      <div class="card-body pb-0 ">
+        <h5 class="card-title">Task Data</h5>
+        
+        <div id="Taskchart" style="min-height: 400px;" class="echart"></div>
+        
+      </div>
+    </div><!-- End Website Traffic -->
+    
+    
     {% endif %}
+    
+    
+    <div class="col-lg-12">
 
-
-
-
-
-    {% for task in task_list %}
-    <div class="col-lg-6">
       <div class="card">
         <div class="card-body">
-          <h1 class="card-title" style="font-size: 24px; ">
-            {% if task.is_completed %}
-            <s>{{task.task}}</s>
-            <i class="ph-fill ph-check-fat"></i>
-            {% else %}
-            {{task.task}}
-            {% if request.user.is_superuser %}- <em class="text-danger">{{task.user}}</em> {% endif %} 
-            {% endif %}
-          </h1>
+          <h5 class="card-title">Tasks List</h5>
 
-          {% if task.task_description %}
-          <hr>
-          <p>
-          <p><em>Task Description :</em></p>
-          {{task.task_description |safe}}
-          </p>
-          {% endif %}
-          <hr/>
-            <div class="d-flex justify-content-between mb-2 mb-4">
-            <div class="start-date col-6">
+          <!-- Table with stripped rows -->
+          <table class="table datatable">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                
+                {% if request.user.is_superuser %}
+                  <th>User</th>
+                {% endif %}
 
-              <div>Start Date :-&nbsp; {{task.start_date|date:'d-m-Y'}} </div>
-              <div>Time :- {{task.start_date|time:'h:i:s a'}} </div>
-            </div>
-            <div class="due-date col-6">
+                <th>Task</th>
+                <th data-type="date" data-format="YYYY/DD/MM">Start Date</th>
+                <th data-type="date" data-format="YYYY/DD/MM">Due Date.</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in task_list %}
+                <tr>
+                  <td>{{forloop.counter}}</td>
 
-              <div>Due Date :-&nbsp; {{task.due_date|date:'d-m-Y'}} </div>
-              <div> Time:- {{task.due_date|time:'h:i:s a'}} </div>
-            </div>
-          </div>
+                  {% if request.user.is_superuser %}
+                  <td>{{task.user}}</td>
+                  {% endif %}
 
-          <div class="card-footer d-flex justify-content-between ">
-            
-            <div class="start-date col-6 " data-bs-toggle="tooltip" data-bs-placement="bottom" title="Created : {{task.created|date:'d-m-Y h:i:s a'}}">
-
-              <div>Created On :-&nbsp; {{task.created|date:'d-m-Y'}} </div>
-            </div>
-            <div class="due-date col-6" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Modified : {{task.modified|date:'d-m-Y h:i:s a'}}">
-
-              <div>Modified On :-&nbsp; {{task.modified|date:'d-m-Y'}} </div>
-            </div>
-          </div>
-            
-
-          <div class="pt-3">
-            <a href="{% url 'taskmanager:complete_task' task.pk %}" class="btn btn-info px-3 mx-2">
-              {% if task.is_completed %} Reset Task {% else %} Complete {% endif %}
-            </a>
-            <a href="{% url 'taskmanager:edit_task' task.pk %}" class="btn btn-success px-3 mx-2">Edit</a>
-            <a href="{% url 'taskmanager:delete_task' task.pk  %}" class="btn btn-danger px-3 mx-2">Delete</a>
-          </div>
+                  {% if task.is_completed %}
+                    <td><a class="text-dark" href="{% url 'taskmanager:task_details' task.pk %}"><s>{{task.task}}</s></a></td>
+                  {% else %}
+                    <td><a class="text-dark" href="{% url 'taskmanager:task_details' task.pk %}">{{task.task}}</a></td>
+                  {% endif %}
+                  <td>{{task.start_date|date:'d-m-Y'}}</td>
+                  <td>{{task.due_date|date:'d-m-Y'}}</td>
+                  <td>
+                  {% if task.is_completed %}
+                  <a href="{% url 'taskmanager:delete_task' task.pk %}" class="btn btn-danger px-3 mx-2">Delete </a>
+                  {% else %}
+                  <a href="{% url 'taskmanager:complete_task' task.pk %}" class="btn btn-primary px-3 mx-2">Complete </a>
+                  {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <!-- End Table with stripped rows -->
         </div>
       </div>
     </div>
-
-    {% empty %}
-    <div class=" d-flex justify-content-center align-items-center flex-column">
-        <!-- <h1><i class="ph ph-smiley-x-eyes display-1"></i></h1> -->
-        <img src="{% static 'img/smiley-x-eyes-fill.svg' %}" alt="" width="150px">
-        <h3>No results found for <span class="text-danger">"{{query}}"</span> .</h3>
-      </div>
-    {% endfor %}
+      
 
   </div>
 </section>
 
 {% endblock pagecontent %}
+
+{% block extrascripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    echarts.init(document.querySelector("#Taskchart")).setOption({
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        top: '5%',
+        left: 'center'
+      },
+      series: [{
+        name: 'Task',
+        type: 'pie',
+        radius: ['40%','70%'],
+        avoidLabelOverlap: false,
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '18',
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: [
+          {
+            value:{{task_completed.count|percentage:task_list.count}},
+            name:'Completed',
+            itemStyle: {color: '#00CC6A'}
+            
+          },
+          {
+            value: {{task_list.count|sub:task_completed.count|percentage:task_list.count}},
+            name: 'pending',
+            itemStyle: {color: '#0078D7'}
+          },
+          {
+            value: {{task_expired.count|percentage:task_list.count}},
+            name: 'expired',
+            itemStyle: {color: '#E81123'}
+          },
+        ]
+      }]
+    });
+  });
+</script>
+{% endblock extrascripts %}
+

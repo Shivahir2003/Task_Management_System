@@ -43,21 +43,32 @@ class DashboardView(LoginRequiredMixin,TemplateView):
             context['users']=User.objects.all()
         else:
             user=User.objects.get(username=self.request.user.username)
-            # getting task name from search 
-            if self.request.GET and self.request.GET['query']:
-                task_title = self.request.GET['query']
-                context['task_list']=user.taskmanager_set.filter(task__icontains=task_title)
-                context['query']=task_title
-            else:   
-                context['task_list']=user.taskmanager_set.all()
-                context['task_completed']=user.taskmanager_set.filter(is_completed=True)
-                context['task_expired']=user.taskmanager_set.filter(due_date__lte=timezone.now())
+            context['task_list']=user.taskmanager_set.all()
+            context['task_completed']=user.taskmanager_set.filter(is_completed=True)
+            context['task_expired']=user.taskmanager_set.filter(due_date__lte=timezone.now())
         return context
 
 
+class TaskDetailsView(LoginRequiredMixin,TemplateView):
+    """
+            Show Task Details for logged in user
+            
+            Arguments:
+                request (HttpRequest)
+                task_pk
+            
+            Returns:
+                In Get : render task detail page
+    """
+    template_name='taskmanager/task_details.html'
+    def get_context_data(self,task_pk,**kwargs):
+        context = super(TaskDetailsView, self).get_context_data(**kwargs)
+        context['task']=TaskManager.objects.get(pk=task_pk)
+        return context
+
 class TaskManagerView(LoginRequiredMixin,View):
     """ All Task Manager operations"""
-    
+
     def dispatch(self,request,*args,**kwargs):
         if request.path == reverse('taskmanager:add_task'):
             return self.add_task_view(request)
@@ -100,7 +111,7 @@ class TaskManagerView(LoginRequiredMixin,View):
                     if user.is_superuser:
                         user_pk=request.POST.get('user')
                         user=User.objects.get(pk=user_pk)
-                    
+
                     #  Saving addtaskform
                     task=addtaskform.save(commit=False)
                     task.user=user
