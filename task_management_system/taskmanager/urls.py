@@ -4,12 +4,14 @@ from taskmanager.views import (
     DashboardView,
     get_all_task_csv,
     TaskManagerView,
+    TaskDetailsView,
 )
 
 app_name='taskmanager'
 urlpatterns = [
     path('', TaskManagerView.as_view(), name='task_manager'),
     path('dashboard/',DashboardView.as_view(),name='dashboard'),
+    path('task-details/<int:task_pk>',TaskDetailsView.as_view(), name='task_details'),
     path('add/',TaskManagerView.as_view(),name='add_task'),
     path('edit/<int:task_pk>/',TaskManagerView.as_view(),name='edit_task'),
     path('delete/<int:task_pk>/',TaskManagerView.as_view(),name='delete_task'),
